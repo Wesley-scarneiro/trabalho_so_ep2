@@ -14,15 +14,15 @@ public class Leitor_escritor extends Thread{
 	private boolean is_reader;
 	private String tipo;
 	private String palavra_lida;
-	private Texto texto;
+	private Gerenciador gerenciador;
 	
-	public Leitor_escritor(boolean valor, Texto t) {
+	public Leitor_escritor(boolean valor, Gerenciador g) {
 		
-		this.is_reader = valor;
-		this.texto = t;
+		is_reader = valor;
+		gerenciador = g;
 		
-		if (valor) this.tipo = "LEITOR";
-		else this.tipo = "ESCRITOR";
+		if (valor) tipo = "LEITOR";
+		else tipo = "ESCRITOR";
 	}
 	
 	
@@ -34,11 +34,25 @@ public class Leitor_escritor extends Thread{
 		
 		if (this.is_reader) {
 			
-			this.ler_palavra();
+			try {
+				
+				this.ler_palavra();
+				
+			} catch (InterruptedException e) {
+
+				e.printStackTrace();
+			}
 		}
 		else {
 			
-			this.modificar_palavra();
+			try {
+				
+				this.escrever_palavra();
+				
+			} catch (InterruptedException e) {
+
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -48,32 +62,30 @@ public class Leitor_escritor extends Thread{
 	}
 	
 	/*
-	 * A cada execução, um leitor obtêm uma palavra aleatória do texto.
+	 * Um leitor solicita ao Gerenciador a leitura de uma palavra do texto em uma posição 'i' aleatória. 
+	 * O gerenciador retorna a palavra solicitada.
 	 */
-	public void ler_palavra() {
+	public void ler_palavra() throws InterruptedException {
 		
 		Random random = new Random();
-		List<String> t = texto.getTexto();
-
+		
 		for (int i = 0; i < 100; i++) {
 			
-			this.palavra_lida = t.get(random.nextInt(100));
+			this.palavra_lida = gerenciador.atender_leitor(this, i, random.nextInt(100));
 		}
 	}
 	
 	/*
 	 * A cada execução, um escritor obtêm uma palavra e a substitui pela string "MODIFICADO".	
 	 */
-	public void modificar_palavra() {
+	public void escrever_palavra() throws InterruptedException {
 		
 		Random random = new Random();
-		List<String> t = texto.getTexto();
 		
 		for (int i = 0; i < 100; i++) {
 			
-			t.add(random.nextInt(100), "MODIFICADO");
+			gerenciador.atender_escritor(this, i, random.nextInt(100), "MODIFICADO");
 		}
-		
 	}
 	
 	public String toString() {
