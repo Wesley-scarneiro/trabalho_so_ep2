@@ -20,7 +20,6 @@ public class Executar {
 		
 		Texto texto = new Texto(arquivo);
 		List<String> log_file = new ArrayList();
-		long totalTime;
 		
 		log_file.add("Nº Leitores | Nº Escritores | Tempo total (ms)");
 		
@@ -33,8 +32,11 @@ public class Executar {
 			// Proporções de leitores e escritores.
 			for (int leitores = 0, escritores = 100; leitores <= 100; leitores++, escritores--) {
 				
+				long totalTime = 0;
+				
 				// Criando uma simulação, com um dado número de leitores e escritores.
 				Gerenciador gerenciador = new Gerenciador(leitores, escritores, texto);
+				gerenciador.excluir_lista();
 				
 				/*
 				 * MARCAÇÃO FINAL DO TEMPO: APÓS O TÉRMINO DA ÚLTIMA THREAD.

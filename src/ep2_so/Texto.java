@@ -11,7 +11,7 @@ public class Texto {
 	private List<String> texto = new ArrayList();
 	private int mutex = 1;							// Controla a entrada da região crítica.
 	private int db = 1;								// Controla a escrita na região crítica.
-	private int leitores = 0;							// Número de leitores na região crítica.
+	private int leitores = 0;						// Número de leitores na região crítica.
 	
 	public Texto(String file) throws IOException {
 		
@@ -29,54 +29,64 @@ public class Texto {
 		input.close();
 	}
 	
-	public List<String> getTexto() {
+	/*
+	 * Realiza o gerenciamento da região crítica para os leitores.
+	 * Método chamado por um leitor.
+	 * Permite que somente um leitor esteja na região crítica quando for preciso manipular as variáveis globais.
+	 * Permite que vários leitores possam ler uma palavra do texto, quando não manipulam variáveis globais.
+	 */
+	public String ler_palavra(Thread leitor, int num_acesso, int indice) throws InterruptedException {
 		
-		return this.texto;
+		// RC bloqueada, precisa dormir e esperar.
+		while (mutex == 0) leitor.wait(1);
+				
+		// RC liberada, pode acessar o texto para ler.
+		--mutex;
+		++leitores;
+		if (leitores == 1) --db;				// Bloqueia o acesso aos escritores.
+		++mutex;
+		String palavra_lida = texto.get(indice);
+				
+		// Verifica se já pode sair da RC.
+		while (mutex == 0) leitor.wait(1);
+		--mutex;
+		--leitores;
+				
+		// No acesso de número 100, dorme por 1ms antes de sair da RC.
+		if (num_acesso == 100) leitor.wait(1);
+				
+		// Sai da da RC.
+		if (leitores == 0) ++db;
+		++mutex;
+		return palavra_lida;
+	}
+	
+	/*
+	 * Método chamado por um escritor.
+	 * Permite somente um escritor por vez na região crítica.
+	 * Um escritor só poderá entrar na RC, quando não existirem mais leitores.
+	 */
+	public void escrever_palavra(Thread escritor, int num_acesso, int indice) throws InterruptedException {
+		
+		// Se a RC não estiver liberada e não houver leitores
+		while(mutex == 0 || db == 0) escritor.wait(1);
+		
+		// RC desbloqueada, pode entrar para fazer a escrita.
+		--mutex;
+		--db;
+		texto.add(indice, "MODIFICADO");;
+		++db;
+		
+		// Dorme no acesso de número 100.
+		if (num_acesso == 100) escritor.wait(1);
+		
+		// Sai da RC.
+		++mutex;
+	}
+	
+	public int getSize() {
+		
+		return texto.size();
 	}
 
-	public int getMutex() {
-		
-		return mutex;
-	}
-
-	public void upMutex() {
-		
-		this.mutex++;
-	}
-	
-	public void downMutex() {
-		
-		this.mutex--;
-	}
-
-	public int getDb() {
-		
-		return db;
-	}
-	
-	public void upDb() {
-		
-		this.db++;
-	}
-
-	public void downDb() {
-		
-		this.db--;
-	}
-	
-	public void addLeitores() {
-		
-		this.leitores++;
-	}
-	
-	public void subLeitores() {
-		
-		this.leitores--;
-	}
-	
-	public int getLeitores()
-	{
-		
-		return this.leitores;
-	}
 }

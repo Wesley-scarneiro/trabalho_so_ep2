@@ -14,12 +14,12 @@ public class Leitor_escritor extends Thread{
 	private boolean is_reader;
 	private String tipo;
 	private String palavra_lida;
-	private Gerenciador gerenciador;
+	private Texto texto;
 	
-	public Leitor_escritor(boolean valor, Gerenciador g) {
+	public Leitor_escritor(boolean valor, Texto t) {
 		
 		is_reader = valor;
-		gerenciador = g;
+		texto = t;
 		
 		if (valor) tipo = "LEITOR";
 		else tipo = "ESCRITOR";
@@ -36,7 +36,7 @@ public class Leitor_escritor extends Thread{
 			
 			try {
 				
-				this.ler_palavra();
+				this.solicitar_leitura();
 				
 			} catch (InterruptedException e) {
 
@@ -47,7 +47,7 @@ public class Leitor_escritor extends Thread{
 			
 			try {
 				
-				this.escrever_palavra();
+				this.solicitar_escrita();
 				
 			} catch (InterruptedException e) {
 
@@ -62,29 +62,29 @@ public class Leitor_escritor extends Thread{
 	}
 	
 	/*
-	 * Um leitor solicita ao Gerenciador a leitura de uma palavra do texto em uma posição 'i' aleatória. 
-	 * O gerenciador retorna a palavra solicitada.
+	 * Um leitor irá solicitar a leitura de uma palavra para o objeto Texto.
+	 * Cabe ao objeto Texto gerenciar os acessos da região crítica.
 	 */
-	public void ler_palavra() throws InterruptedException {
+	public void solicitar_leitura() throws InterruptedException {
 		
 		Random random = new Random();
 		
 		for (int i = 0; i < 100; i++) {
 			
-			this.palavra_lida = gerenciador.atender_leitor(this, i, random.nextInt(100));
+			palavra_lida = texto.ler_palavra(this, i, random.nextInt(texto.getSize()));
 		}
 	}
 	
 	/*
-	 * A cada execução, um escritor obtêm uma palavra e a substitui pela string "MODIFICADO".	
+	 * Um escritor irá solicitar a escrita de uma palavra no texto para o objeto Texto.	
 	 */
-	public void escrever_palavra() throws InterruptedException {
+	public void solicitar_escrita() throws InterruptedException {
 		
 		Random random = new Random();
 		
 		for (int i = 0; i < 100; i++) {
 			
-			gerenciador.atender_escritor(this, i, random.nextInt(100), "MODIFICADO");
+			texto.escrever_palavra(this, i, random.nextInt(texto.getSize()));
 		}
 	}
 	
