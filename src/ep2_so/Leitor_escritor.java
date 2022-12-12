@@ -14,11 +14,13 @@ public class Leitor_escritor extends Thread{
 	private boolean is_reader;
 	private String palavra_lida;
 	private Texto texto;
+	private int implementacao;
 	
-	public Leitor_escritor(boolean valor, Texto t) {
+	public Leitor_escritor(boolean valor, Texto t, int implementacao) {
 		
 		is_reader = valor;
 		texto = t;
+		implementacao = implementacao;
 	}
 	
 	
@@ -31,8 +33,23 @@ public class Leitor_escritor extends Thread{
 		if (this.is_reader) {
 			
 			try {
+				
+				// Implementação com Readers e Writes
+				if (this.implementacao == 0) {
 					
 					this.solicitar_leitura();
+					
+				}
+				
+				// Implementação sem Readers e Writes. 
+				else {
+					
+					synchronized (this) {
+						
+						this.solicitar_escrita2();
+
+					}
+				}
 				
 			} catch (InterruptedException e) {
 
@@ -42,8 +59,22 @@ public class Leitor_escritor extends Thread{
 		else {
 			
 			try {
+				
+				// Implementação com Readers e Writes
+				if (this.implementacao == 0) {
+					
 					this.solicitar_escrita();
-
+				}
+				
+				// Implementação sem Readers e Writes. 
+				else {
+					
+					synchronized (this) {
+						
+						this.solicitar_escrita2();
+					}
+				}
+				
 			} catch (InterruptedException e) {
 
 				e.printStackTrace();
@@ -70,6 +101,17 @@ public class Leitor_escritor extends Thread{
 		}
 	}
 	
+	public void solicitar_leitura2() throws InterruptedException {
+		
+		Random random = new Random();
+		
+		for (int i = 0; i < 100; i++) {
+			
+			palavra_lida = texto.ler_palavra2(this, i, random.nextInt(texto.getSize()));
+		}
+	}
+	
+	
 	/*
 	 * Um escritor irá solicitar a escrita de uma palavra no texto para o objeto Texto.	
 	 */
@@ -80,6 +122,16 @@ public class Leitor_escritor extends Thread{
 		for (int i = 0; i < 100; i++) {
 			
 			texto.escrever_palavra(this, i, random.nextInt(texto.getSize()));
+		}
+	}
+	
+	public void solicitar_escrita2() throws InterruptedException {
+		
+		Random random = new Random();
+		
+		for (int i = 0; i < 100; i++) {
+			
+			texto.escrever_palavra2(this, i, random.nextInt(texto.getSize()));
 		}
 	}
 }

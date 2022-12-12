@@ -16,25 +16,27 @@ public class Executar {
 	/*
      * Inicializa a classe Texto e Gerenciador.
      */
-    public static void iniciar(String arquivo, int repeticoes) throws IOException, InterruptedException {
+    public static void iniciar(String arquivo, int repeticoes, int implementacao) throws IOException, InterruptedException {
 
         List<String> log_file = new ArrayList();
+
 
         log_file.add("Nº Leitores | Nº Escritores | Tempo total (ms)\n");
 
         // Proporções de leitores e escritores.
         for (int leitores = 100, escritores = 0; leitores >= 0; leitores--, escritores++) {
-            Texto texto = new Texto(arquivo);
 
+            Texto texto = new Texto(arquivo);
         	System.out.println("Leitores: " + leitores + " escritores: " + escritores);
             long totalTime = 0;
             long tempoMedio = 0;
 
             // Número de repetições da simulação.
             for (int repetir = 0; repetir < repeticoes; repetir++) {
+            	
 
                 // Criando uma simulação, com um dado número de leitores e escritores.
-                Gerenciador gerenciador = new Gerenciador(leitores, escritores, texto);
+                Gerenciador gerenciador = new Gerenciador(leitores, escritores, texto, implementacao);
 
                 /*
                  * MARCAÇÃO FINAL DO TEMPO: APÓS O TÉRMINO DA ÚLTIMA THREAD.
@@ -67,7 +69,11 @@ public class Executar {
 		
 		try {
 			
-			iniciar("entrada.txt",10);
+			/*
+			 * Implementação 0: Com Readers e Writes.
+			 * Implementação 1: Sem Readers e Writes, usando lock do Java.
+			 */
+			iniciar("entrada.txt",10, 1);
 			
 		} catch (IOException e) {
 			

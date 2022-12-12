@@ -20,13 +20,13 @@ public class Gerenciador {
 	private int num_escritores;
 	private long startTime = 0;
 	
-	public Gerenciador(int num_leitores, int num_escritores, Texto t) throws InterruptedException {
+	public Gerenciador(int num_leitores, int num_escritores, Texto t, int implementacao) throws InterruptedException {
 		
 		this.num_leitores = num_leitores;
 		this.num_escritores = num_escritores;
 		this.texto = t;
 		
-		this.popular_lista(t);
+		this.popular_lista(t, implementacao);
 		
 		/*
 		 * MARCAÇÃO INICIAL DO TEMPO: APÓS TODAS AS THREADS TEREM SIDO CRIADAS.
@@ -41,7 +41,7 @@ public class Gerenciador {
 	 * Popula o array de leitores e escritores.
 	 * Distribui cada leitor ou escritor em uma posição aleatória do array.
 	 */
-	private void popular_lista(Texto t) {
+	private void popular_lista(Texto t, int implementacao) {
 		
 		Random random = new Random();
 		int num = random.nextInt(100);
@@ -50,26 +50,17 @@ public class Gerenciador {
 		for (int i = 0; i < num_leitores; i++) {
 			
 			while(lista[num] != null) num = random.nextInt(100);
-			lista[num] = new Leitor_escritor(true, t);
+			lista[num] = new Leitor_escritor(true, t, implementacao);
 		}
 		
 		// Cria os escritores
 		for (int i = 0; i < num_escritores; i++) {
 			
 			while(lista[num] != null) num = random.nextInt(100);
-			lista[num] = new Leitor_escritor(false, t);
+			lista[num] = new Leitor_escritor(false, t, implementacao);
 		}
 	}
 	
-	private void popular_lista2(Texto t) {
-		
-		// Cria os leitores
-		for (int i = 0; i < 100; i++) {
-					
-			if (i < num_escritores) lista[i] = new Leitor_escritor(true, t);
-			else lista[i] = new Leitor_escritor(false, t);
-		}
-	}
 	
 	/*
 	 * Inicializa as threads de cada leitor e escritor.
@@ -87,11 +78,6 @@ public class Gerenciador {
 	public long getStarTime() {
 		
 		return this.startTime;
-	}
-	
-	public void excluir_lista() {
-		
-		lista = null;
 	}
 
 }

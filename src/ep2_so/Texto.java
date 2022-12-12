@@ -61,6 +61,9 @@ public class Texto {
 		return palavra_lida;
 	}
 	
+	/*
+	 * Sem uso de semmáforos para leitores.
+	 */
 	public String ler_palavra2(Thread t, int num_acesso, int indice) throws InterruptedException {
 		
 		String palavra_lida = texto.get(indice);
@@ -68,6 +71,9 @@ public class Texto {
 		return palavra_lida;
 	}
 	
+	/*
+	 * Sem uso de semáforos para escritores.
+	 */
 	public void escrever_palavra2(Thread t, int num_acesso, int indice) throws InterruptedException {
 		
 		texto.add(indice, "MODIFICADO");
