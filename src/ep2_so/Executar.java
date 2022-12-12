@@ -14,41 +14,42 @@ import java.util.List;
 public class Executar {
 	
 	/*
-	 * Inicializa a classe Texto e Gerenciador.
-	 */
-	public static void iniciar(String arquivo, int repeticoes) throws IOException, InterruptedException {
-		
-		Texto texto = new Texto(arquivo);
-		List<String> log_file = new ArrayList();
-		
-		log_file.add("Nº Leitores | Nº Escritores | Tempo total (ms)");
-		
-		// Número de repetições da simulação.
-		for (int repetir = 0; repetir < repeticoes; repetir++) {
-			
-			log_file.add("\n");
-			log_file.add("Simulação: " + (1+repetir));
-			
-			// Proporções de leitores e escritores.
-			for (int leitores = 0, escritores = 100; leitores <= 100; leitores++, escritores--) {
-				
-				long totalTime = 0;
-				
-				// Criando uma simulação, com um dado número de leitores e escritores.
-				Gerenciador gerenciador = new Gerenciador(leitores, escritores, texto);
-				gerenciador.excluir_lista();
-				
-				/*
-				 * MARCAÇÃO FINAL DO TEMPO: APÓS O TÉRMINO DA ÚLTIMA THREAD.
-				 * Marca o tempo total decorrido de uma dada proporção de leitores e escritores.
-				 */
-				totalTime = System.currentTimeMillis() - gerenciador.getStarTime();
-				log_file.add(escritores + " " + leitores + " " + totalTime);
-			}
-		}
-		
-		gerarLog(log_file);
-	}
+     * Inicializa a classe Texto e Gerenciador.
+     */
+    public static void iniciar(String arquivo, int repeticoes) throws IOException, InterruptedException {
+
+        List<String> log_file = new ArrayList();
+
+        log_file.add("Nº Leitores | Nº Escritores | Tempo total (ms)\n");
+
+        // Proporções de leitores e escritores.
+        for (int leitores = 100, escritores = 0; leitores >= 0; leitores--, escritores++) {
+            Texto texto = new Texto(arquivo);
+
+        	System.out.println("Leitores: " + leitores + " escritores: " + escritores);
+            long totalTime = 0;
+            long tempoMedio = 0;
+
+            // Número de repetições da simulação.
+            for (int repetir = 0; repetir < repeticoes; repetir++) {
+
+                // Criando uma simulação, com um dado número de leitores e escritores.
+                Gerenciador gerenciador = new Gerenciador(leitores, escritores, texto);
+
+                /*
+                 * MARCAÇÃO FINAL DO TEMPO: APÓS O TÉRMINO DA ÚLTIMA THREAD.
+                 * Marca o tempo total decorrido de uma dada proporção de leitores e escritores.
+                 */
+                totalTime = System.currentTimeMillis() - gerenciador.getStarTime();
+                tempoMedio += totalTime;
+            }
+
+            tempoMedio /= repeticoes;
+            log_file.add(leitores + " " + escritores + " " + tempoMedio);
+        }
+        
+        gerarLog(log_file);
+    }
 	
 	public static void gerarLog(List<String> l) throws FileNotFoundException {
 		
@@ -66,7 +67,7 @@ public class Executar {
 		
 		try {
 			
-			iniciar("entrada.txt", 2);
+			iniciar("entrada.txt",10);
 			
 		} catch (IOException e) {
 			

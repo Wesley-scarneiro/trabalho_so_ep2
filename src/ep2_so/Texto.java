@@ -38,7 +38,7 @@ public class Texto {
 	public String ler_palavra(Thread leitor, int num_acesso, int indice) throws InterruptedException {
 		
 		// RC bloqueada, precisa dormir e esperar.
-		while (mutex == 0) leitor.wait(1);
+		while (mutex == 0) leitor.sleep(1);
 				
 		// RC liberada, pode acessar o texto para ler.
 		--mutex;
@@ -48,17 +48,30 @@ public class Texto {
 		String palavra_lida = texto.get(indice);
 				
 		// Verifica se já pode sair da RC.
-		while (mutex == 0) leitor.wait(1);
+		while (mutex == 0) leitor.sleep(1);
 		--mutex;
 		--leitores;
 				
 		// No acesso de número 100, dorme por 1ms antes de sair da RC.
-		if (num_acesso == 100) leitor.wait(1);
+		if (num_acesso == 100) leitor.sleep(1);
 				
 		// Sai da da RC.
 		if (leitores == 0) ++db;
 		++mutex;
 		return palavra_lida;
+	}
+	
+	public String ler_palavra2(Thread t, int num_acesso, int indice) throws InterruptedException {
+		
+		String palavra_lida = texto.get(indice);
+		if (num_acesso == 100) t.sleep(1);
+		return palavra_lida;
+	}
+	
+	public void escrever_palavra2(Thread t, int num_acesso, int indice) throws InterruptedException {
+		
+		texto.add(indice, "MODIFICADO");
+		if (num_acesso == 100) t.sleep(1);
 	}
 	
 	/*
@@ -69,7 +82,7 @@ public class Texto {
 	public void escrever_palavra(Thread escritor, int num_acesso, int indice) throws InterruptedException {
 		
 		// Se a RC não estiver liberada e não houver leitores
-		while(mutex == 0 || db == 0) escritor.wait(1);
+		while(db == 0) escritor.sleep(1);
 		
 		// RC desbloqueada, pode entrar para fazer a escrita.
 		--mutex;
@@ -78,7 +91,7 @@ public class Texto {
 		++db;
 		
 		// Dorme no acesso de número 100.
-		if (num_acesso == 100) escritor.wait(1);
+		if (num_acesso == 100) escritor.sleep(1);
 		
 		// Sai da RC.
 		++mutex;

@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class Gerenciador {
 	
-	private Leitor_escritor [] lista = new Leitor_escritor[100];
+	private Thread [] lista = new Leitor_escritor[100];
 	private Texto texto;
 	private int num_leitores;
 	private int num_escritores;
@@ -61,13 +61,23 @@ public class Gerenciador {
 		}
 	}
 	
+	private void popular_lista2(Texto t) {
+		
+		// Cria os leitores
+		for (int i = 0; i < 100; i++) {
+					
+			if (i < num_escritores) lista[i] = new Leitor_escritor(true, t);
+			else lista[i] = new Leitor_escritor(false, t);
+		}
+	}
+	
 	/*
 	 * Inicializa as threads de cada leitor e escritor.
 	 * Usa-se join em todas as threads, para que o main não termine antes de nenhuma delas.
 	 */
 	private void iniciar_threads() throws InterruptedException {
 		
-		for (Leitor_escritor i : lista) {
+		for (Thread i : lista) {
 			
 			i.start();
 			i.join();

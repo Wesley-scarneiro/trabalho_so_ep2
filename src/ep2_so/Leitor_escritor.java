@@ -12,7 +12,6 @@ import java.util.Random;
 public class Leitor_escritor extends Thread{
 
 	private boolean is_reader;
-	private String tipo;
 	private String palavra_lida;
 	private Texto texto;
 	
@@ -20,9 +19,6 @@ public class Leitor_escritor extends Thread{
 		
 		is_reader = valor;
 		texto = t;
-		
-		if (valor) tipo = "LEITOR";
-		else tipo = "ESCRITOR";
 	}
 	
 	
@@ -35,8 +31,8 @@ public class Leitor_escritor extends Thread{
 		if (this.is_reader) {
 			
 			try {
-				
-				this.solicitar_leitura();
+					
+					this.solicitar_leitura();
 				
 			} catch (InterruptedException e) {
 
@@ -46,9 +42,8 @@ public class Leitor_escritor extends Thread{
 		else {
 			
 			try {
-				
-				this.solicitar_escrita();
-				
+					this.solicitar_escrita();
+
 			} catch (InterruptedException e) {
 
 				e.printStackTrace();
@@ -86,10 +81,5 @@ public class Leitor_escritor extends Thread{
 			
 			texto.escrever_palavra(this, i, random.nextInt(texto.getSize()));
 		}
-	}
-	
-	public String toString() {
-		
-		return tipo;
 	}
 }
